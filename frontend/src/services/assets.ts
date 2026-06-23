@@ -1,11 +1,14 @@
 import axios from "axios";
 
+export type AssetStatus = "ok" | "warning" | "critical";
+export type AssetType = "pipe" | "hydrant" | "sensor" | "valve";
+
 export interface AssetQueryParams {
     page: number;
     pageSize: number;
 
-    type?: string;
-    status?: string;
+    type?: AssetType;
+    status?: AssetStatus;
 
     lat?: number;
     lng?: number;

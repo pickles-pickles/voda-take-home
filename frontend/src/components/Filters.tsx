@@ -3,12 +3,7 @@ import { useEffect, useState } from "react";
 import type { ChangeEvent, } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
-import type { RootState } from "../store/store";
-import { setFilters, resetFilters } from "../store/filtersSlice";
-/* import { setAssets, setPagination } from "../store/assetsSlice"; */
-
-import { getAssets } from "../services/assets";
+import { setFilters, resetFilters, type FiltersState } from "../store/filtersSlice";
 import { paginationSelector } from "../store/assetsSlice";
 
 type Errors = {
@@ -31,10 +26,6 @@ type LocalFilters = {
 export default function Filters() {
     const dispatch = useDispatch();
     const pagination = useSelector(paginationSelector)
-
-    const filters = useSelector(
-        (state: RootState) => state.filters
-    );
 
     const [searchParams, setSearchParams] =
         useSearchParams();
@@ -87,19 +78,6 @@ export default function Filters() {
             });
         }
 
-        setLocal({
-            type:
-                searchParams.get("type") ?? "",
-            status:
-                searchParams.get("status") ?? "",
-            lat:
-                searchParams.get("lat") ?? "",
-            lng:
-                searchParams.get("lng") ?? "",
-            radiusKm:
-                searchParams.get("radiusKm") ??
-                "",
-        });
     }, []);
 
     function handleChange(
@@ -263,26 +241,9 @@ export default function Filters() {
             setSearchParams(params);
 
             dispatch(
-                setFilters(payload)
+                setFilters(payload as Partial<FiltersState>)
             );
 
-            /*  const response =
-                 await getAssets({
-                     page: pagination.page,
-                     pageSize:
-                         pagination.pageSize,
-                     ...payload,
-                 }); */
-
-            /*       dispatch(
-                    setAssets(response.data)
-                  );
-            
-                  dispatch(
-                    setPagination(
-                      response.pagination
-                    ) 
-                  );*/
         } catch (error) {
             console.error(error);
 

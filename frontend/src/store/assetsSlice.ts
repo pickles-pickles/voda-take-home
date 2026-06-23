@@ -2,19 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
 
-export type AssetStatus = "ok" | "warning" | "critical";
-export type AssetType = "pipe" | "hydrant" | "sensor" | "valve";
+/* export type AssetStatus = "ok" | "warning" | "critical";
+export type AssetType = "pipe" | "hydrant" | "sensor" | "valve"; */
 
 export interface Asset {
     id: string;
     name: string;
-    type: AssetType;
-    status: AssetStatus;
+    type: string;
+    status: string;
     lat: number;
     lng: number;
     installed_at: string;
     last_inspected_at: string | null;
-    notes: string;
+    notes: string | null;
 }
 
 export interface Pagination {

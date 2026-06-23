@@ -12,7 +12,7 @@ import {
 } from "../store/assetsSlice";
 
 import { setFilters } from "../store/filtersSlice";
-import { getAssets } from "../services/assets";
+import { getAssets, type AssetQueryParams } from "../services/assets";
 
 import Pagination from "../components/Pagination";
 
@@ -48,10 +48,10 @@ export default function Assets() {
             ),
 
             type:
-                searchParams.get("type") ?? "",
+                searchParams.get("type") ?? undefined,
 
             status:
-                searchParams.get("status") ?? "",
+                searchParams.get("status") ?? undefined,
 
             lat: searchParams.get("lat")
                 ? Number(searchParams.get("lat"))
@@ -78,7 +78,7 @@ export default function Assets() {
      * 3. URL is now the trigger (single responsibility)
      */
     useEffect(() => {
-        async function fetchAssets(query: any) {
+        async function fetchAssets(query: AssetQueryParams) {
             try {
                 console.log({ query });
 
@@ -86,7 +86,7 @@ export default function Assets() {
                 dispatch(setError(null));
 
                 const response = await getAssets(query);
-                console.log({ response });
+                console.log({ response, query });
 
                 dispatch(setAssets(response.data));
                 dispatch(

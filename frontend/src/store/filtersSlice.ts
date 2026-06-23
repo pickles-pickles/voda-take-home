@@ -7,8 +7,8 @@ export type AssetStatus = "ok" | "warning" | "critical" | "";
 export type AssetType = "pipe" | "hydrant" | "sensor" | "valve" | "";
 
 export interface FiltersState {
-    type: AssetType;
-    status: AssetStatus;
+    type?: AssetType;
+    status?: AssetStatus;
     lat?: number;
     lng?: number;
     radiusKm?: number;
