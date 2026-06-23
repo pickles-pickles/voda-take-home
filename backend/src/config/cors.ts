@@ -1,4 +1,5 @@
 import cors from "cors";
+import { allowedOrigins } from "../helpers/constants";
 
 
 

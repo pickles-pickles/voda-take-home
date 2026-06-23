@@ -9,6 +9,7 @@ import { setFilters, resetFilters } from "../store/filtersSlice";
 /* import { setAssets, setPagination } from "../store/assetsSlice"; */
 
 import { getAssets } from "../services/assets";
+import { paginationSelector } from "../store/assetsSlice";
 
 type Errors = {
     lat?: string;
@@ -24,11 +25,12 @@ type LocalFilters = {
     radiusKm: string;
 };
 
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 20;
+
+
 
 export default function Filters() {
     const dispatch = useDispatch();
+    const pagination = useSelector(paginationSelector)
 
     const filters = useSelector(
         (state: RootState) => state.filters
@@ -64,7 +66,7 @@ export default function Filters() {
         if (!params.has("page")) {
             params.set(
                 "page",
-                String(DEFAULT_PAGE)
+                String(pagination.page)
             );
 
             changed = true;
@@ -73,7 +75,7 @@ export default function Filters() {
         if (!params.has("pageSize")) {
             params.set(
                 "pageSize",
-                String(DEFAULT_PAGE_SIZE)
+                String(pagination.pageSize)
             );
 
             changed = true;
@@ -202,14 +204,17 @@ export default function Filters() {
         const params =
             new URLSearchParams();
 
+        console.log({ params });
+
+
         params.set(
             "page",
-            String(DEFAULT_PAGE)
+            String(pagination.page)
         );
 
         params.set(
             "pageSize",
-            String(DEFAULT_PAGE_SIZE)
+            String(pagination.pageSize)
         );
 
         if (local.type) {
@@ -261,13 +266,13 @@ export default function Filters() {
                 setFilters(payload)
             );
 
-            const response =
-                await getAssets({
-                    page: DEFAULT_PAGE,
-                    pageSize:
-                        DEFAULT_PAGE_SIZE,
-                    ...payload,
-                });
+            /*  const response =
+                 await getAssets({
+                     page: pagination.page,
+                     pageSize:
+                         pagination.pageSize,
+                     ...payload,
+                 }); */
 
             /*       dispatch(
                     setAssets(response.data)
@@ -298,12 +303,12 @@ export default function Filters() {
 
         params.set(
             "page",
-            String(DEFAULT_PAGE)
+            String(pagination.page)
         );
 
         params.set(
             "pageSize",
-            String(DEFAULT_PAGE_SIZE)
+            String(pagination.pageSize)
         );
 
         setSearchParams(params);

@@ -1,14 +1,5 @@
-
-
-/* const Assets = () => {
-    return (
-        <div>Assets</div>
-    )
-}
-
-export default Assets */
-
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import type { RootState } from "../store/store";
@@ -18,60 +9,130 @@ import {
     setPagination,
     setLoading,
     setError,
-    type Asset,
 } from "../store/assetsSlice";
 
+import { setFilters } from "../store/filtersSlice";
 import { getAssets } from "../services/assets";
+
 import Pagination from "../components/Pagination";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
 
 export default function Assets() {
     const dispatch = useDispatch();
+    const [searchParams] = useSearchParams();
 
-    const filters = useSelector(
+    /*   const filters = useSelector(
         (state: RootState) => state.filters
-    );
+      ); */
 
     const { items, pagination, loading, error } =
         useSelector(
             (state: RootState) => state.assets
         );
 
-    async function fetchAssets(
-        page = pagination.page
-    ) {
-        try {
-            dispatch(setLoading(true));
-            dispatch(setError(null));
+    /**
+     * 1. Parse URL → normalized query object
+     */
+    const queryFromUrl = useMemo(() => {
+        return {
+            page: Number(
+                searchParams.get("page") ??
+                DEFAULT_PAGE
+            ),
 
-            const response = await getAssets({
-                page,
-                pageSize: pagination.pageSize,
-                ...filters,
-            });
+            pageSize: Number(
+                searchParams.get("pageSize") ??
+                DEFAULT_PAGE_SIZE
+            ),
 
-            dispatch(setAssets(response.data));
-            dispatch(
-                setPagination(response.pagination)
-            );
-        } catch (err) {
-            dispatch(
-                setError("Failed to load assets")
-            );
-            console.warn(err);
-        } finally {
-            dispatch(setLoading(false));
-        }
-    }
+            type:
+                searchParams.get("type") ?? "",
 
+            status:
+                searchParams.get("status") ?? "",
+
+            lat: searchParams.get("lat")
+                ? Number(searchParams.get("lat"))
+                : undefined,
+
+            lng: searchParams.get("lng")
+                ? Number(searchParams.get("lng"))
+                : undefined,
+
+            radiusKm: searchParams.get("radiusKm")
+                ? Number(
+                    searchParams.get("radiusKm")
+                )
+                : undefined,
+        };
+    }, [searchParams]);
+
+    /**
+     * 2. Fetch function (single source of truth)
+     */
+
+
+    /**
+     * 3. URL is now the trigger (single responsibility)
+     */
     useEffect(() => {
-        fetchAssets(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters]);
+        async function fetchAssets(query: any) {
+            try {
+                console.log({ query });
 
-    async function handlePageChange(
-        page: number
-    ) {
-        await fetchAssets(page);
+                dispatch(setLoading(true));
+                dispatch(setError(null));
+
+                const response = await getAssets(query);
+                console.log({ response });
+
+                dispatch(setAssets(response.data));
+                dispatch(
+                    setPagination(response.pagination)
+                );
+
+                dispatch(
+                    setFilters({
+                        type: query.type,
+                        status: query.status,
+                        lat: query.lat,
+                        lng: query.lng,
+                        radiusKm: query.radiusKm,
+                    })
+                );
+            } catch (err) {
+                dispatch(
+                    setError("Failed to load assets")
+                );
+                console.warn(err);
+
+            } finally {
+                dispatch(setLoading(false));
+            }
+        }
+        fetchAssets(queryFromUrl);
+    }, [queryFromUrl, dispatch]);
+
+    /**
+     * 4. Pagination change → updates URL only
+     */
+    function handlePageChange(page: number) {
+        const params = new URLSearchParams(
+            searchParams
+        );
+
+        params.set("page", String(page));
+
+        window.history.replaceState(
+            null,
+            "",
+            `?${params.toString()}`
+        );
+
+        // IMPORTANT:
+        // This triggers useEffect via searchParams change
     }
 
     if (loading) {
@@ -90,35 +151,98 @@ export default function Assets() {
                 </div>
             )}
 
-            {/* LIST */}
             <div className="list-group">
-                {items.map((asset: Asset) => (
-                    <div
-                        key={asset.id}
-                        className="list-group-item"
-                    >
-                        <div className="d-flex justify-content-between">
-                            <div>
-                                <strong>{asset.name}</strong>
+                {items.map((asset) => (
+                    <div key={asset.id} className="list-group-item py-3">
 
+                        {/* HEADER */}
+                        <div className="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div className="fw-semibold">{asset.name}</div>
                                 <div className="text-muted small">
-                                    {asset.type} •{" "}
-                                    {asset.status}
+                                    ID: {asset.id}
                                 </div>
                             </div>
 
                             <div className="text-end">
+                                <span
+                                    className={`badge me-2 ${asset.type === "sensor"
+                                        ? "bg-primary"
+                                        : asset.type === "valve"
+                                            ? "bg-secondary"
+                                            : asset.type === "pipe"
+                                                ? "bg-info"
+                                                : "bg-dark"
+                                        }`}
+                                >
+                                    {asset.type}
+                                </span>
+
+                                <span
+                                    className={`badge ${asset.status === "ok"
+                                        ? "bg-success"
+                                        : asset.status === "warning"
+                                            ? "bg-warning text-dark"
+                                            : "bg-danger"
+                                        }`}
+                                >
+                                    {asset.status}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* METADATA GRID */}
+                        <div className="row mt-2 small text-muted">
+                            <div className="col-md-3">
+                                <div>
+                                    <strong>Location</strong>
+                                </div>
                                 <div>
                                     {asset.lat.toFixed(4)},{" "}
                                     {asset.lng.toFixed(4)}
                                 </div>
                             </div>
+
+                            <div className="col-md-3">
+                                <div>
+                                    <strong>Installed</strong>
+                                </div>
+                                <div>
+                                    {new Date(
+                                        asset.installed_at
+                                    ).toLocaleDateString()}
+                                </div>
+                            </div>
+
+                            <div className="col-md-3">
+                                <div>
+                                    <strong>Last inspection</strong>
+                                </div>
+                                <div>
+                                    {asset.last_inspected_at
+                                        ? new Date(
+                                            asset.last_inspected_at
+                                        ).toLocaleDateString()
+                                        : "—"}
+                                </div>
+                            </div>
                         </div>
+
+                        {/* NOTES */}
+                        {asset.notes && (
+                            <div className="mt-2">
+                                <div className="small text-muted">
+                                    Notes
+                                </div>
+                                <div className="small">
+                                    {asset.notes}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
 
-            {/* PAGINATION */}
             <Pagination
                 page={pagination.page}
                 pageSize={pagination.pageSize}

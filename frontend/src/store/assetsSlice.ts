@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "./store";
 
 export type AssetStatus = "ok" | "warning" | "critical";
 export type AssetType = "pipe" | "hydrant" | "sensor" | "valve";
@@ -75,3 +76,5 @@ export const {
 } = assetsSlice.actions;
 
 export default assetsSlice.reducer;
+
+export const paginationSelector = (state: RootState) => state.assets.pagination
