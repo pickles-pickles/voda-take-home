@@ -4,12 +4,14 @@ import { pool } from "./config/db";
 import { swaggerDocs } from "./docs/swagger";
 import router from "./routes/assets.routes";
 import { BASE_URL } from "./helpers/constants";
+import { corsMiddleware } from "./config/cors";
 
 export async function createServer() {
     const app = express();
 
     app.use(express.json());
     console.log('test 1');
+    app.use(corsMiddleware);
     app.use(router);
     swaggerDocs(app);
 
