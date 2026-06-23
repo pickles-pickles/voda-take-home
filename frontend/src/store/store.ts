@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import filtersSlice from './filtersSlice'
+import assetsSlice from './assetsSlice'
 
 
 export const store = configureStore({
     reducer: combineReducers({
         filters: filtersSlice,
+        assets: assetsSlice
 
     })
 })
