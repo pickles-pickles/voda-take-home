@@ -22,4 +22,13 @@ router.put(`${BASE_URL}/assets/:id`, updateAsset);
 
 router.delete(`${BASE_URL}/assets/:id`, deleteAsset);
 
+// Redirect from BASE_URL to BASE_URL/docs
+router.get(`${BASE_URL}`, (req: Request, res: Response) => {
+    res.redirect(`${BASE_URL}/docs`);
+});
+
+router.get(`/`, (req: Request, res: Response) => {
+    res.redirect(`${BASE_URL}/docs`);
+});
+
 export default router;
