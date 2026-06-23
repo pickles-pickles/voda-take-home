@@ -11,7 +11,7 @@ import {
     setError,
 } from "../store/assetsSlice";
 
-import { setFilters } from "../store/filtersSlice";
+import { setFilters, type AssetStatus, type AssetType } from "../store/filtersSlice";
 import { getAssets, type AssetQueryParams } from "../services/assets";
 
 import Pagination from "../components/Pagination";
@@ -95,8 +95,8 @@ export default function Assets() {
 
                 dispatch(
                     setFilters({
-                        type: query.type,
-                        status: query.status,
+                        type: query.type as AssetType,
+                        status: query.status as AssetStatus,
                         lat: query.lat,
                         lng: query.lng,
                         radiusKm: query.radiusKm,

@@ -7,8 +7,8 @@ export interface AssetQueryParams {
     page: number;
     pageSize: number;
 
-    type?: AssetType;
-    status?: AssetStatus;
+    type?: string;
+    status?: string;
 
     lat?: number;
     lng?: number;
