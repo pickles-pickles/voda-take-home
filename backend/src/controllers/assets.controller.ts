@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 
 import * as assetService from "../services/assets.service";
 
@@ -7,14 +7,27 @@ export async function getAssets(
     res: Response
 ) {
     try {
-        const assets = await assetService.getAssets({
+        const result = await assetService.getAssets({
             page: Number(req.query.page) || 1,
             pageSize: Number(req.query.pageSize) || 20,
+
             type: req.query.type as string,
             status: req.query.status as string,
+
+            lat: req.query.lat
+                ? Number(req.query.lat)
+                : undefined,
+
+            lng: req.query.lng
+                ? Number(req.query.lng)
+                : undefined,
+
+            radiusKm: req.query.radiusKm
+                ? Number(req.query.radiusKm)
+                : undefined,
         });
 
-        res.status(200).json(assets);
+        res.status(200).json(result);
     } catch (error) {
         console.error(error);
 

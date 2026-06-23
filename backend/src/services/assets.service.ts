@@ -1,10 +1,15 @@
 import { pool } from "../config/db";
+import { haversineDistanceKm } from "../helpers/geo";
 
 interface AssetFilters {
     page?: number;
     pageSize?: number;
     type?: string;
     status?: string;
+
+    lat?: number;
+    lng?: number;
+    radiusKm?: number;
 }
 
 export async function getAssets(
@@ -13,8 +18,13 @@ export async function getAssets(
     const {
         page = 1,
         pageSize = 20,
+
         type,
         status,
+
+        lat,
+        lng,
+        radiusKm,
     } = filters;
 
     const values: unknown[] = [];
@@ -31,26 +41,49 @@ export async function getAssets(
     }
 
     let query = `
-    SELECT *
-    FROM assets
-  `;
+        SELECT *
+        FROM assets
+    `;
 
     if (where.length) {
         query += ` WHERE ${where.join(" AND ")}`;
     }
 
-    values.push(pageSize);
-    values.push((page - 1) * pageSize);
-
-    query += `
-    ORDER BY name
-    LIMIT $${values.length - 1}
-    OFFSET $${values.length}
-  `;
-
     const result = await pool.query(query, values);
 
-    return result.rows;
+    let assets = result.rows;
+
+    const hasGeoFilter =
+        lat !== undefined &&
+        lng !== undefined &&
+        radiusKm !== undefined;
+
+    if (hasGeoFilter) {
+        assets = assets.filter((asset) => {
+            const distance = haversineDistanceKm(
+                lat,
+                lng,
+                asset.lat,
+                asset.lng
+            );
+
+            return distance <= radiusKm;
+        });
+    }
+
+    const total = assets.length;
+
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+
+    return {
+        data: assets.slice(start, end),
+        pagination: {
+            page,
+            pageSize,
+            total,
+        },
+    };
 }
 
 export async function getAssetById(id: string) {
