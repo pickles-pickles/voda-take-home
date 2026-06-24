@@ -78,3 +78,5 @@ export const {
 export default assetsSlice.reducer;
 
 export const paginationSelector = (state: RootState) => state.assets.pagination
+
+export const assetsSelector = (state: RootState) => state.assets.items
