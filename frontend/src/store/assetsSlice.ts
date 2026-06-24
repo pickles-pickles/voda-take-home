@@ -87,7 +87,7 @@ const assetsSlice = createSlice({
         setAssets(state, action: PayloadAction<Asset[]>) {
             state.items = action.payload;
         },
-        setSelectedAsset(state, action: PayloadAction<Asset>) {
+        setSelectedAsset(state, action: PayloadAction<Asset | null>) {
             state.selectedAsset = action.payload;
         },
         setPagination(state, action: PayloadAction<Pagination>) {

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { selectedAssetSelector, type Asset } from '../store/assetsSlice';
-import { useSelector } from 'react-redux';
+import { selectedAssetSelector, setSelectedAsset, type Asset } from '../store/assetsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { isModalOpenSelector } from '../store/AppSlice';
 // import { updateAsset } from '../store/assetsSlice'; // use your real action
 
@@ -54,6 +54,7 @@ const AssetDetailsModal = ({
     onClose,
     onSubmitAsset,
 }: AssetDetailsModalProps) => {
+    const dispatch = useDispatch()
     const [isEditing, setIsEditing] = useState(false);
     const isOpen = useSelector(isModalOpenSelector)
     const asset = useSelector(selectedAssetSelector)
@@ -93,6 +94,12 @@ const AssetDetailsModal = ({
         reset(assetToFormValues(asset));
         setIsEditing(false);
     }, [asset, isOpen, reset]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(setSelectedAsset(null))
+        }
+    }, [])
 
     if (!isOpen || !asset) return null;
 
