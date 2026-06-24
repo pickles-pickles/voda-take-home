@@ -7,6 +7,7 @@ import { assetsSelector, selectedAssetSelector, setSelectedAsset, type Asset } f
 import type { AssetStatus } from '../services/assets';
 import { useDispatch, useSelector } from 'react-redux';
 import { FitAssetsBounds } from './FitAssetsBounds';
+import { setIsModalOpen } from '../store/AppSlice';
 
 
 const DEFAULT_CENTER: [number, number] = [37.9838, 23.7275]; // replace if needed
@@ -48,6 +49,7 @@ const Map = () => {
 
     const handleAssetClick = (asset: Asset) => {
         dispatch(setSelectedAsset(asset))
+        dispatch(setIsModalOpen(true))
         console.log({ selectedAsset: asset });
     }
 
