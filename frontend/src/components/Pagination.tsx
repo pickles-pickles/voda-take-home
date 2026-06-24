@@ -4,7 +4,7 @@ interface PaginationProps {
     page: number;
     pageSize: number;
     total: number;
-    onPageChange: (page: number) => Promise<void>;
+    onPageChange: (page: number) => void;
 }
 
 const Pagination = ({
@@ -55,8 +55,8 @@ const Pagination = ({
             <ul className="pagination justify-content-center">
                 <li
                     className={`page-item ${page === 1
-                            ? "disabled"
-                            : ""
+                        ? "disabled"
+                        : ""
                         }`}
                 >
                     <button
@@ -81,8 +81,8 @@ const Pagination = ({
                             <li
                                 key={pageNumber}
                                 className={`page-item ${pageNumber === page
-                                        ? "active"
-                                        : ""
+                                    ? "active"
+                                    : ""
                                     }`}
                             >
                                 <button
@@ -102,8 +102,8 @@ const Pagination = ({
 
                 <li
                     className={`page-item ${page === totalPages
-                            ? "disabled"
-                            : ""
+                        ? "disabled"
+                        : ""
                         }`}
                 >
                     <button
