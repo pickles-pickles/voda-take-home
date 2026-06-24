@@ -6,6 +6,7 @@ import { allowedOrigins } from "../helpers/constants";
 export const corsMiddleware = cors({
     origin: (origin, callback) => {
         // allow requests with no origin (Postman, curl)
+        console.log("CORS origin:", origin);
         if (!origin) return callback(null, true);
 
         if (allowedOrigins.includes(origin)) {
