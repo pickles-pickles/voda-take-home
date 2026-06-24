@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
-import { postAsset } from "../services/assets";
+import { postAsset, putAsset } from "../services/assets";
 
 /* export type AssetStatus = "ok" | "warning" | "critical";
 export type AssetType = "pipe" | "hydrant" | "sensor" | "valve"; */
@@ -80,6 +80,34 @@ export const createAssetThunk = createAsyncThunk<
     }
 );
 
+export const updateAssetThunk = createAsyncThunk<
+    Asset,
+    { id: string; payload: CreateAssetPayload },
+    { rejectValue: string }
+>("assets/updateAsset", async ({ id, payload }, thunkApi) => {
+    try {
+        const updatedAsset = await putAsset(id, payload);
+        return updatedAsset;
+    } catch (error: unknown) {
+        let message = "Failed to update asset";
+
+        if (typeof error === "object" && error !== null && "response" in error) {
+            const axiosError = error as {
+                response?: { data?: { message?: string } };
+                message?: string;
+            };
+
+            message =
+                axiosError.response?.data?.message ??
+                axiosError.message ??
+                message;
+        }
+
+        return thunkApi.rejectWithValue(message);
+    }
+});
+
+
 const assetsSlice = createSlice({
     name: "assets",
     initialState,
@@ -124,6 +152,23 @@ const assetsSlice = createSlice({
             .addCase(createAssetThunk.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload ?? "Failed to create asset";
+            })
+            .addCase(updateAssetThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateAssetThunk.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                console.log({ actionPayload: action.payload });
+
+                state.items = state.items.map(item =>
+                    item.id === action.payload.id ? action.payload : item
+                );
+            })
+            .addCase(updateAssetThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload ?? "Failed to update asset";
             });
     },
 });

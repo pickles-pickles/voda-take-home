@@ -35,3 +35,11 @@ export async function postAsset(payload: CreateAssetPayload): Promise<Asset> {
     const response = await axios.post("http://localhost:3000/api/assets", payload);
     return response.data;
 }
+
+export async function putAsset(
+    id: string,
+    payload: CreateAssetPayload
+): Promise<Asset> {
+    const response = await axios.put(`http://localhost:3000/api/assets/${id}`, payload);
+    return response.data;
+}

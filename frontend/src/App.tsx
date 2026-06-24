@@ -4,7 +4,7 @@ import AssetDetailsModal from './components/AssetDetailsModal'
 import Assets from './components/Assets'
 import Filters from './components/Filters'
 import Map from './components/Map'
-import { createAssetThunk, type Asset, type CreateAssetPayload } from './store/assetsSlice'
+import { createAssetThunk, updateAssetThunk, type Asset, type CreateAssetPayload } from './store/assetsSlice'
 import { setIsCreationModalOpen, setIsModalOpen } from './store/AppSlice'
 import { useDispatch } from 'react-redux'
 import CreateAssetButton from './components/CreateAssetButton'
@@ -15,7 +15,9 @@ function App() {
   const dispatch = useDispatch<AppDispatch>()
 
   const handleSubmitAsset = (updatedAsset: Asset) => {
-    //dispatch(updateAsset(updatedAsset)); // or thunk / mutation
+    const { id, ...payloadWithoutId } = updatedAsset;
+
+    dispatch(updateAssetThunk({ id, payload: payloadWithoutId }));
     console.log({ updatedAsset });
 
     dispatch(setIsModalOpen(false)); // optional: close after save
