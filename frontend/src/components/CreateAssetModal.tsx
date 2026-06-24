@@ -165,14 +165,16 @@ const CreateAssetModal = ({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label htmlFor="type">Type</label>
-              <input
+              <select
                 id="type"
-                {...register('type', {
-                  required: 'Type is required',
-                  validate: (value) =>
-                    value.trim().length > 0 || 'Type is required',
-                })}
-              />
+
+                {...register('type', { required: 'Type is required' })}
+              >
+                <option value="pipe">pipe</option>
+                <option value="hydrant">hydrant</option>
+                <option value="sensor">sensor</option>
+                <option value="valve">valve</option>
+              </select>
               {errors.type && (
                 <span style={{ color: 'crimson', fontSize: 12 }}>
                   {errors.type.message}
