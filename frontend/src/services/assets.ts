@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Asset } from "../store/assetsSlice";
 
 export type AssetStatus = "ok" | "warning" | "critical";
 export type AssetType = "pipe" | "hydrant" | "sensor" | "valve";
@@ -25,5 +26,12 @@ export async function getAssets(
         }
     );
 
+    return response.data;
+}
+
+export type CreateAssetPayload = Omit<Asset, "id">;
+
+export async function postAsset(payload: CreateAssetPayload): Promise<Asset> {
+    const response = await axios.post("http://localhost:3000/api/assets", payload);
     return response.data;
 }
