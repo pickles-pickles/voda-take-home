@@ -52,7 +52,7 @@ const Pagination = ({
             aria-label="Asset pagination"
             className="mt-4"
         >
-            <ul className="pagination justify-content-center">
+            <ul className="pagination flex-wrap justify-content-center">
                 <li
                     className={`page-item ${page === 1
                         ? "disabled"
