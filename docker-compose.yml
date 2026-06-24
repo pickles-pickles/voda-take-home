@@ -14,7 +14,8 @@ services:
       - "5432:5432"
 
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- postgres_data:/var/lib/postgresql/data
 
   backend:
     build:
@@ -31,6 +32,16 @@ services:
 
     ports:
       - "3000:3000"
+    volumes:
+      - ./db:/db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: unless-stopped
 
 volumes:
   postgres_data:

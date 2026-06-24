@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import * as assetService from "../services/assets.service";
+import { generateSafeId } from "../helpers/functions";
 
 export async function getAssets(
     req: Request,
@@ -43,7 +44,7 @@ export async function getAssetById(
 ) {
     try {
         const asset = await assetService.getAssetById(
-            req.params.id
+            generateSafeId(req.params.id)
         );
 
         if (!asset) {
@@ -84,7 +85,7 @@ export async function updateAsset(
     try {
         const asset =
             await assetService.updateAsset(
-                req.params.id,
+                generateSafeId(req.params.id),
                 req.body
             );
 
@@ -109,7 +110,7 @@ export async function deleteAsset(
     try {
         const asset =
             await assetService.deleteAsset(
-                req.params.id
+                generateSafeId(req.params.id)
             );
 
         if (!asset) {
