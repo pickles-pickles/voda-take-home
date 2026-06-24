@@ -6,6 +6,7 @@ import { createAssetIcon } from '../helpers/mapHelper';
 import { assetsSelector, selectedAssetSelector, setSelectedAsset, type Asset } from '../store/assetsSlice';
 import type { AssetStatus } from '../services/assets';
 import { useDispatch, useSelector } from 'react-redux';
+import { FitAssetsBounds } from './FitAssetsBounds';
 
 
 const DEFAULT_CENTER: [number, number] = [37.9838, 23.7275]; // replace if needed
@@ -75,7 +76,7 @@ const Map = () => {
                     selectedAssetId={selectedAsset?.id || null}
                     markerRefs={markerRefs}
                 />
-
+                <FitAssetsBounds />
                 {assets.map((asset: Asset) => (
                     <Marker
                         key={asset.id}
