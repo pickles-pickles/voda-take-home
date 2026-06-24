@@ -9,6 +9,8 @@ import {
     setPagination,
     setLoading,
     setError,
+    setSelectedAsset,
+    type Asset,
 } from "../store/assetsSlice";
 
 import { setFilters, type AssetStatus, type AssetType } from "../store/filtersSlice";
@@ -135,6 +137,11 @@ export default function Assets() {
         // This triggers useEffect via searchParams change
     }
 
+    const handleAssetClick = (asset: Asset) => {
+        dispatch(setSelectedAsset(asset))
+        console.log({ selectedAsset: asset });
+    }
+
     if (loading) {
         return (
             <div className="text-center mt-4">
@@ -153,7 +160,7 @@ export default function Assets() {
 
             <div className="list-group">
                 {items.map((asset) => (
-                    <div key={asset.id} className="list-group-item py-3">
+                    <div key={asset.id} className="list-group-item py-3" onClick={() => handleAssetClick(asset)}>
 
                         {/* HEADER */}
                         <div className="d-flex justify-content-between align-items-start">

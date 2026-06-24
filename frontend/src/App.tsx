@@ -9,7 +9,7 @@ function App() {
 
   return (
     <>
-      <main className='container'>
+      <main className='container-fluid pd-3'>
         <div className='row'>
           <div>
             <Filters />

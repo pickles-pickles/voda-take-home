@@ -3,14 +3,10 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import type { Marker as LeafletMarker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { createAssetIcon } from '../helpers/mapHelper';
-import { assetsSelector, type Asset } from '../store/assetsSlice';
+import { assetsSelector, selectedAssetSelector, setSelectedAsset, type Asset } from '../store/assetsSlice';
 import type { AssetStatus } from '../services/assets';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-type AssetsMapProps = {
-    selectedAssetId: string | null;
-    onSelectAsset: (assetId: string) => void;
-};
 
 const DEFAULT_CENTER: [number, number] = [37.9838, 23.7275]; // replace if needed
 const DEFAULT_ZOOM = 7;
@@ -18,7 +14,6 @@ const FOCUS_ZOOM = 15;
 
 function MapController({
     assets,
-    selectedAssetId,
     markerRefs,
 }: {
     assets: Asset[];
@@ -26,29 +21,34 @@ function MapController({
     markerRefs: React.MutableRefObject<Record<string, LeafletMarker | null>>;
 }) {
     const map = useMap();
+    const selectedAsset = useSelector(selectedAssetSelector);
 
     useEffect(() => {
-        if (!selectedAssetId) return;
+        if (!selectedAsset) return;
 
-        const asset = assets.find((a) => a.id === selectedAssetId);
+        const asset = assets.find((a) => a.id === selectedAsset?.id);
         if (!asset) return;
 
         map.flyTo([asset.lat, asset.lng], FOCUS_ZOOM, {
             duration: 0.6,
         });
 
-        const marker = markerRefs.current[selectedAssetId];
+        const marker = markerRefs.current[selectedAsset?.id];
         marker?.openPopup();
-    }, [selectedAssetId, assets, map, markerRefs]);
+    }, [selectedAsset, assets, map, markerRefs]);
 
     return null;
 }
 
-const Map = ({
-    selectedAssetId,
-    onSelectAsset,
-}: AssetsMapProps) => {
+const Map = () => {
+    const dispatch = useDispatch();
     const assets = useSelector(assetsSelector);
+    const selectedAsset = useSelector(selectedAssetSelector);
+
+    const handleAssetClick = (asset: Asset) => {
+        dispatch(setSelectedAsset(asset))
+        console.log({ selectedAsset: asset });
+    }
 
     const markerRefs = useRef<Record<string, LeafletMarker | null>>({});
 
@@ -72,7 +72,7 @@ const Map = ({
 
                 <MapController
                     assets={assets}
-                    selectedAssetId={selectedAssetId}
+                    selectedAssetId={selectedAsset?.id || null}
                     markerRefs={markerRefs}
                 />
 
@@ -85,7 +85,10 @@ const Map = ({
                             markerRefs.current[asset.id] = ref;
                         }}
                         eventHandlers={{
-                            click: () => onSelectAsset(asset.id),
+                            click: () => {
+                                console.log(asset.id);
+                                handleAssetClick(asset)
+                            },
                         }}
                     />
                 ))}

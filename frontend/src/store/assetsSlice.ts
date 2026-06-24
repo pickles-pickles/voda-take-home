@@ -28,6 +28,7 @@ interface AssetsState {
     pagination: Pagination;
     loading: boolean;
     error: string | null;
+    selectedAsset: Asset | null;
 }
 
 const initialState: AssetsState = {
@@ -39,6 +40,7 @@ const initialState: AssetsState = {
     },
     loading: false,
     error: null,
+    selectedAsset: null
 };
 
 const assetsSlice = createSlice({
@@ -48,7 +50,9 @@ const assetsSlice = createSlice({
         setAssets(state, action: PayloadAction<Asset[]>) {
             state.items = action.payload;
         },
-
+        setSelectedAsset(state, action: PayloadAction<Asset>) {
+            state.selectedAsset = action.payload;
+        },
         setPagination(state, action: PayloadAction<Pagination>) {
             state.pagination = action.payload;
         },
@@ -69,6 +73,7 @@ const assetsSlice = createSlice({
 
 export const {
     setAssets,
+    setSelectedAsset,
     setPagination,
     setLoading,
     setError,
@@ -80,3 +85,5 @@ export default assetsSlice.reducer;
 export const paginationSelector = (state: RootState) => state.assets.pagination
 
 export const assetsSelector = (state: RootState) => state.assets.items
+
+export const selectedAssetSelector = (state: RootState) => state.assets.selectedAsset
