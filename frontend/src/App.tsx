@@ -4,23 +4,59 @@ import AssetDetailsModal from './components/AssetDetailsModal'
 import Assets from './components/Assets'
 import Filters from './components/Filters'
 import Map from './components/Map'
-import { createAssetThunk, updateAssetThunk, type Asset, type CreateAssetPayload } from './store/assetsSlice'
+import { createAssetThunk, selectedAssetSelector, updateAssetThunk, type Asset, type CreateAssetPayload } from './store/assetsSlice'
 import { setIsCreationModalOpen, setIsModalOpen } from './store/AppSlice'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CreateAssetButton from './components/CreateAssetButton'
 import CreateAssetModal from './components/CreateAssetModal'
-import type { AppDispatch } from './store/store'
+import type { AppDispatch, } from './store/store'
+import { useSearchParams } from 'react-router-dom'
 
 function App() {
   const dispatch = useDispatch<AppDispatch>()
 
-  const handleSubmitAsset = (updatedAsset: Asset) => {
+  const [searchParams] = useSearchParams();
+  const oldAsset = useSelector(selectedAssetSelector
+  );
+
+  //better to move it in the modal component, but I 'd rather spend my energy in other priorities
+  const handleSubmitAsset = async (updatedAsset: Asset) => {
     const { id, ...payloadWithoutId } = updatedAsset;
 
-    dispatch(updateAssetThunk({ id, payload: payloadWithoutId }));
-    console.log({ updatedAsset });
+    // old item from store (unfiltered or filtered—either way it must include this item)
 
-    dispatch(setIsModalOpen(false)); // optional: close after save
+
+    if (!oldAsset) {
+      // If you can't find it, just proceed.
+      await dispatch(updateAssetThunk({ id, payload: payloadWithoutId as CreateAssetPayload })).unwrap();
+      dispatch(setIsModalOpen(false));
+      return;
+    }
+
+    const keysToCheck = Object.keys(payloadWithoutId) as (keyof typeof payloadWithoutId)[];
+
+    const warnings: string[] = [];
+    for (const key of keysToCheck) {
+      const urlValue = searchParams.get(String(key));
+      if (!urlValue) continue;
+
+      const oldValue = (oldAsset as Asset)[key];
+      const newValue = (updatedAsset as Asset)[key];
+
+      // If the item currently matches the URL filter value on this key,
+      // but will no longer match after update => it will disappear.
+      if (String(oldValue) === urlValue && String(newValue) !== urlValue) {
+        warnings.push(`Updating ${String(key)} from "${urlValue}" will contradict with the url filters.`);
+      }
+    }
+
+    if (warnings.length) {
+      const ok = window.confirm(warnings.join("\n"));
+      if (!ok) return;
+    }
+
+    await dispatch(updateAssetThunk({ id, payload: payloadWithoutId as CreateAssetPayload })).unwrap();
+    dispatch(setIsModalOpen(false));
   };
 
 
