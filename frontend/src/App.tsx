@@ -4,16 +4,15 @@ import AssetDetailsModal from './components/AssetDetailsModal'
 import Assets from './components/Assets'
 import Filters from './components/Filters'
 import Map from './components/Map'
-import { createAssetThunk, errorSelector, isLoadingSelector, type Asset, type CreateAssetPayload } from './store/assetsSlice'
+import { createAssetThunk, type Asset, type CreateAssetPayload } from './store/assetsSlice'
 import { setIsCreationModalOpen, setIsModalOpen } from './store/AppSlice'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import CreateAssetButton from './components/CreateAssetButton'
 import CreateAssetModal from './components/CreateAssetModal'
+import type { AppDispatch } from './store/store'
 
 function App() {
-  const dispatch = useDispatch()
-  const error = useSelector(errorSelector)
-  const isLoading = useSelector(isLoadingSelector)
+  const dispatch = useDispatch<AppDispatch>()
 
   const handleSubmitAsset = (updatedAsset: Asset) => {
     //dispatch(updateAsset(updatedAsset)); // or thunk / mutation
@@ -22,18 +21,15 @@ function App() {
     dispatch(setIsModalOpen(false)); // optional: close after save
   };
 
-  const handleCreateAsset = (payload: CreateAssetPayload) => {
 
-    dispatch(createAssetThunk(payload))
-    if (!error && !isLoading) {
+  const handleCreateAsset = async (payload: CreateAssetPayload) => {
+    try {
+      await dispatch(createAssetThunk(payload)).unwrap();
       dispatch(setIsCreationModalOpen(false));
+    } catch {
+      // leave open
     }
-    //
-
-
-    // optional: if rejected, leave modal open and show error
   };
-
   return (
     <>
       <main className='container-fluid pd-3'>
