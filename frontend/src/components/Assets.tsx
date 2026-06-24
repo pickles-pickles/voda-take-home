@@ -163,15 +163,11 @@ export default function Assets() {
                     <div key={asset.id} className="list-group-item py-3" onClick={() => handleAssetClick(asset)}>
 
                         {/* HEADER */}
-                        <div className="d-flex justify-content-between align-items-start">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
                             <div>
                                 <div className="fw-semibold">{asset.name}</div>
-                                <div className="text-muted small">
-                                    ID: {asset.id}
-                                </div>
                             </div>
-
-                            <div className="text-end">
+                            <div>
                                 <span
                                     className={`badge me-2 ${asset.type === "sensor"
                                         ? "bg-primary"
@@ -196,21 +192,22 @@ export default function Assets() {
                                     {asset.status}
                                 </span>
                             </div>
+
                         </div>
+
 
                         {/* METADATA GRID */}
                         <div className="row mt-2 small text-muted">
-                            <div className="col-md-3">
-                                <div>
-                                    <strong>Location</strong>
-                                </div>
-                                <div>
-                                    {asset.lat.toFixed(4)},{" "}
-                                    {asset.lng.toFixed(4)}
-                                </div>
+                            <div className="row">
+                                <strong>Location</strong>
                             </div>
-
-                            <div className="col-md-3">
+                            <div className="row">
+                                <div className="col-6">{asset.lat.toFixed(4)},{" "}</div>
+                                <div className="col-6">{asset.lng.toFixed(4)}</div>
+                            </div>
+                        </div>
+                        <div className="row mt-2 small text-muted">
+                            <div className="col-6">
                                 <div>
                                     <strong>Installed</strong>
                                 </div>
@@ -221,7 +218,7 @@ export default function Assets() {
                                 </div>
                             </div>
 
-                            <div className="col-md-3">
+                            <div className="col-6">
                                 <div>
                                     <strong>Last inspection</strong>
                                 </div>
@@ -234,6 +231,7 @@ export default function Assets() {
                                 </div>
                             </div>
                         </div>
+
 
                         {/* NOTES */}
                         {asset.notes && (

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, Marker, TileLayer, Tooltip, useMap } from 'react-leaflet';
 import type { Marker as LeafletMarker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { createAssetIcon } from '../helpers/mapHelper';
@@ -93,7 +93,16 @@ const Map = () => {
                                 handleAssetClick(asset)
                             },
                         }}
-                    />
+                    >
+                        <Tooltip
+                            direction="top"
+                            offset={[0, -10]}
+                            opacity={1}
+                            permanent={false}
+                        >
+                            {asset.name}
+                        </Tooltip>
+                    </Marker>
                 ))}
             </MapContainer>
         </div>

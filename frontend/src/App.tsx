@@ -46,8 +46,8 @@ function App() {
           <CreateAssetButton />
         </div>
         <div className='row'>
-          <div className='col-6'> <Assets /></div>
-          <div className='col-6'><Map /></div>
+          <div className='col-5'> <Assets /></div>
+          <div className='col-7'><Map /></div>
         </div>
         <AssetDetailsModal
 
