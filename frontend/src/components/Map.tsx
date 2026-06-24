@@ -61,7 +61,10 @@ const Map = () => {
     }, [assets]);
 
     return (
-        <div style={{ height: '100%', maxHeight: '100vh', minHeight: 500, borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{
+            height: '100%', maxHeight: '90vh', minHeight: 500, borderRadius: 12, overflow: 'hidden',
+            /* position: 'relative', */
+        }}>
             <MapContainer
                 center={center}
                 zoom={DEFAULT_ZOOM}
